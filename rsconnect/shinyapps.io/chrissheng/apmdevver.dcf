@@ -1,0 +1,12 @@
+name: apmdevver
+title: apmdevver
+username:
+account: chrissheng
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2353975
+bundleId: 3188231
+url: https://chrissheng.shinyapps.io/apmdevver/
+when: 1590428315.62528
+asMultiple: FALSE
+asStatic: FALSE
