@@ -37,11 +37,11 @@ shinyServer(function(input, output, session){
   stockData <- new.env()
   
   getTicker <- reactive({
-    fulltext = paste(input$pp1, input$pp2, input$pp3, input$pp4, input$pp5, input$pp6, input$pp7, input$pp8, input$pp9, input$pp10)
+    fulltext = paste(input$pp1, input$pp2, input$pp3, input$pp4, input$pp5, input$pp6, input$pp7, input$pp8, input$pp9, input$pp10, input$pp11, input$pp12)
     fulltext = str_trim(fulltext)
     tickers = strsplit(fulltext, " ")[[1]]
-    if (length(tickers) < 10) {tickers[(length(tickers)+1):10] = "NA"}
-    tickers[1:10]
+    if (length(tickers) < 12) {tickers[(length(tickers)+1):12] = "NA"}
+    tickers[1:12]
   })
   
   
@@ -50,7 +50,7 @@ shinyServer(function(input, output, session){
     isolate({
       input$update
       # tickers = getTicker()
-      text = paste(input$pp1, input$pp2, input$pp3, input$pp4, input$pp5, input$pp6, input$pp7, input$pp8, input$pp9, input$pp10)
+      text = paste(input$pp1, input$pp2, input$pp3, input$pp4, input$pp5, input$pp6, input$pp7, input$pp8, input$pp9, input$pp10, input$pp11, input$pp12)
       text = str_trim(text)
       tickers = strsplit(text, " ")[[1]]
       # tickers = strsplit(input$data, ",")[[1]]
@@ -88,7 +88,7 @@ shinyServer(function(input, output, session){
     if (input$auto == "TRUE") {
       sum = "100%"
     } else {
-      sum = input$p1+input$p2+input$p3+input$p4+input$p5+input$p6+input$p7+input$p8+input$p9+input$p10
+      sum = input$p1+input$p2+input$p3+input$p4+input$p5+input$p6+input$p7+input$p8+input$p9+input$p10+input$p11+input$p12
       sum = round(sum*100, digits = 4)
       sum = paste(sum, "%", sep = "")
     }
@@ -208,6 +208,28 @@ shinyServer(function(input, output, session){
                      port_weight$weight = outflowControl(port_weight$weight, input$p10, 10)
                    }
                  }
+    ),
+    observeEvent(input$p11,
+                 {
+                   if (input$auto == "TRUE") {
+                     suspendMany(observers)
+                     port_weight$weight = updateweight(port_weight$weight, input$p11, 11)
+                     resumeMany(observers)
+                   } else {
+                     port_weight$weight = outflowControl(port_weight$weight, input$p11, 11)
+                   }
+                 }
+    ),
+    observeEvent(input$p12,
+                 {
+                   if (input$auto == "TRUE") {
+                     suspendMany(observers)
+                     port_weight$weight = updateweight(port_weight$weight, input$p12, 12)
+                     resumeMany(observers)
+                   } else {
+                     port_weight$weight = outflowControl(port_weight$weight, input$p12, 12)
+                   }
+                 }
     )
   )
   
@@ -243,6 +265,12 @@ shinyServer(function(input, output, session){
   output$p10ui = renderUI({
     wghtsliderInput("p10", port_weight$weight[10], label = NULL)
   })
+  output$p11ui = renderUI({
+    wghtsliderInput("p11", port_weight$weight[11], label = NULL)
+  })
+  output$p12ui = renderUI({
+    wghtsliderInput("p12", port_weight$weight[12], label = NULL)
+  })
   
   
   #Date slider
@@ -258,7 +286,7 @@ shinyServer(function(input, output, session){
   output$graph5 = renderPlotly({
     
 
-    alloc = data.frame(wght = port_weight$weight, asset = showManyTickers(getTicker()[1:10]))
+    alloc = data.frame(wght = port_weight$weight, asset = showManyTickers(getTicker()[1:12]))
     
     g5 = plot_ly(alloc, labels = ~asset, values = ~wght, type = 'pie',
                  textposition = 'inside',
@@ -315,7 +343,7 @@ shinyServer(function(input, output, session){
     #opt_w_ret = findEfficientFrontier.Return(returns, target_ret)
     
     tickers = getTicker()
-    numTicker = 10
+    numTicker = 12
     while (tickers[numTicker] == "NA") {
       numTicker = numTicker-1
     }
@@ -326,8 +354,6 @@ shinyServer(function(input, output, session){
     
     #Return a dataframe
     opt_df = data.frame(OptRet = opt_w_ret, OptRisk = opt_w_risk)
-    # opt_df = data.frame(OptRet = opt_w_ret, OptRisk = opt_w_ret)
-    # opt_df = data.frame(OptRet = opt_w_risk, OptRisk = opt_w_risk)
     return (opt_df)
     
 
@@ -407,9 +433,7 @@ shinyServer(function(input, output, session){
   
   #Current allocation
   output$graph7 = renderPlotly({
-    
-    # alloc = data.frame(wght = port_weight$weight, c("SP500","EuropeStocks","EMStocks","Treasury","CorpBond","RealEstate"))
-    alloc = data.frame(wght = port_weight$weight, asset = showManyTickers(getTicker()[1:10]))
+    alloc = data.frame(wght = port_weight$weight, asset = showManyTickers(getTicker()[1:12]))
     
     g7 = plot_ly(alloc, labels = ~asset, values = ~wght, type = 'pie',
                  textposition = 'inside',
@@ -438,14 +462,14 @@ shinyServer(function(input, output, session){
     
     opt_w = opt_weights()
     
-    optRet2 = append(opt_w$OptRet, rep(0, 10 - length(opt_w$OptRet)))
+    optRet2 = append(opt_w$OptRet, rep(0, 12 - length(opt_w$OptRet)))
     
     # alloc = data.frame(wght = opt_w$OptRet, asset = c("SP500","EuropeStocks","EMStocks","Treasury","CorpBond","RealEstate"))
-    alloc = data.frame(wght = optRet2, asset = getTicker()[1:10])
+    alloc = data.frame(wght = optRet2, asset = getTicker()[1:12])
     
     
     # g8 = plot_ly(alloc, labels = ~asset, values = ~wght, type = 'pie',
-    g8 = plot_ly(alloc, labels = ~showManyTickers(getTicker()[1:10]), values = ~wght, type = 'pie',
+    g8 = plot_ly(alloc, labels = ~showManyTickers(getTicker()[1:12]), values = ~wght, type = 'pie',
                  textposition = 'inside',
                  textinfo = 'label+percent',
                  insidetextfont = list(color = '#000'),

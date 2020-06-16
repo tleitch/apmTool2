@@ -140,7 +140,6 @@ findEfficientFrontier.ReturnALT = function(mean_ret, cov_matrix, target_ret, num
   
   opt_w = opt_w/sum(opt_w) #Sum up to 1
   
-  # if (length(opt_w) < 10) {opt_w[(length(opt_w)):10] = 0}
   
   return(opt_w)
   

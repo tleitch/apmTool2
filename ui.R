@@ -137,28 +137,32 @@ shinyUI(dashboardPage(skin = "black" ,
                                     textAreaInput("pp2", label = NULL, "PRESX", height = "40px", resize = "none"),
                                     textAreaInput("pp3", label = NULL, "EEM", height = "40px", resize = "none"),
                                     textAreaInput("pp4", label = NULL, "DGS10", height = "40px", resize = "none"),
-                                    textAreaInput("pp5", label = NULL, "LQD", height = "40px", resize = "none")
+                                    textAreaInput("pp5", label = NULL, "LQD", height = "40px", resize = "none"),
+                                    textAreaInput("pp6", label = NULL, "IYR", height = "40px", resize = "none")
                                     ),
                              column(2, align="left",
                                     uiOutput("p1ui"),
                                     uiOutput("p2ui"),
                                     uiOutput("p3ui"),
                                     uiOutput("p4ui"),
-                                    uiOutput("p5ui")
+                                    uiOutput("p5ui"),
+                                    uiOutput("p6ui")
                                     ),
                              column(1, align="left",
-                                    textAreaInput("pp6", label = NULL, "IYR", height = "40px", resize = "none"),
                                     textAreaInput("pp7", label = NULL, "PSP", height = "40px", resize = "none"),
                                     textAreaInput("pp8", label = NULL, "DFGBX", height = "40px", resize = "none"),
                                     textAreaInput("pp9", label = NULL, "", height = "40px", resize = "none"),
-                                    textAreaInput("pp10", label = NULL, "", height = "40px", resize = "none")
+                                    textAreaInput("pp10", label = NULL, "", height = "40px", resize = "none"),
+                                    textAreaInput("pp12", label = NULL, "", height = "40px", resize = "none"),
+                                    textAreaInput("pp11", label = NULL, "", height = "40px", resize = "none")
                                     ),
                              column(2, align="left",
-                                    uiOutput("p6ui"),
                                     uiOutput("p7ui"),
                                     uiOutput("p8ui"),
                                     uiOutput("p9ui"),
-                                    uiOutput("p10ui")
+                                    uiOutput("p10ui"),
+                                    uiOutput("p11ui"),
+                                    uiOutput("p12ui")
                              ),
                              column(2, rHandsontableOutput("table5")),
                              

@@ -7,18 +7,17 @@
 #Updates weights if changed
 
 updateweight = function(oldweight, new, i) {
-  # if (ticker[i] == "NA") {new == 0}
   if (new==oldweight[i]) {
     oldweight
   } else if (new==1){
-    newweight = rep(0,10)
+    newweight = rep(0,12)
     oldweight = oldweight
     new = 0.9999
     newweight[-i] = oldweight[-i]/(sum(oldweight[-i]) + 1e-10)*(1-new)
     newweight[i] = new
     newweight
   } else {
-    newweight = rep(0,10)
+    newweight = rep(0,12)
     oldweight = oldweight
     newweight[-i] = oldweight[-i]/(sum(oldweight[-i]) + 1e-10)*(1-new)
     newweight[i] = new
@@ -36,29 +35,8 @@ outflowControl = function(oldweight, new, i) {
 
 
 showTicker <- function(ticker) {
-  # switch (ticker,
-  #         "SPY" = "SP500",
-  #         "PRESX" = "EuropeStocks",
-  #         "EEM" = "EMStocks",
-  #         "DGS10" = "Treasury",
-  #         "LQD" = "CorpBonds",
-  #         "IYR" = "RealEstate",
-  #         "PSP" = "PrivateEquity",
-  #         "DFGBX" = "GlobalBond",
-  #         ticker
-  # )
   ticker
 }
-
-# showTicker <- function(ticker) {
-#   if (ticker == "SPY") {
-#     "S&P 500"
-#   } else if (ticker == "DGS10") {
-#     "Treasury"
-#   } else {
-#     ticker
-#   }
-# }
 
 showManyTickers <- function(ticker) {
   for (i in 1:length(ticker)) {
@@ -80,28 +58,6 @@ getCol <- function(price, ticker) {
   retCol
 }
 
-# updateweight = function(oldweight, new, i) {
-#   if (new==oldweight[i]) {
-#     oldweight
-#   } else if (new==1){
-#     newweight = rep(1e-10,10)
-#     newweight[i] = new
-#     newweight
-#   } else {
-#     before = c(1:i)
-#     newweight = rep(0,10)
-#     newweight[before] = oldweight[before]
-#     newweight[i] = new
-#     beforesum = sum(newweight[before])
-#     if (beforesum >= 1) {
-#       newweight[before] = newweight[before]/beforesum
-#     } else {
-#       lastsum = 1 - beforesum
-#       newweight[-before] = oldweight[-before]/(sum(oldweight[-before]) + 1e-10) * lastsum
-#     }
-#     newweight
-#   }
-# }
 
 # suspend and resume a list of observers
 suspendMany = function(observers) invisible(lapply(observers, function(x) x$suspend()))
@@ -125,7 +81,7 @@ wghtsliderInput = function(inputId,value, label, submitted=FALSE) {
 bt_port = function(df, from, to, wght, rebalance, dfzero){
   
   # wipe out weight for "NA"
-  i = 10
+  i = 12
   while (wght[i] <= 1e-7 && i > (dim(df)[2])) {
     wght = wght[-i]
     i = i-1
@@ -172,14 +128,10 @@ opt_port = function(df, from, to, opt_w, port_ret){
   
   #Same return portfolio
   opt_ret = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRet, rebalance = "Never" , geometric = TRUE))
-  # opt_ret = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRet, rebalance = "Never" , geometric = FALSE))
-  # opt_ret = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRet, rebalance = "Never"))
   opt_ret$date = as.Date(row.names(opt_ret))
   
   #Same risk portfolio
   opt_risk = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRisk, rebalance = "Never", geometric = TRUE))
-  # opt_risk = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRisk, rebalance = "Never", geometric = FALSE))
-  # opt_risk = data.frame(calcPortReturn(df_tmp, from, to, opt_w$OptRisk, rebalance = "Never"))
   opt_risk$date = as.Date(row.names(opt_risk))
   
   

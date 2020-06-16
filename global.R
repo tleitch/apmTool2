@@ -17,35 +17,6 @@ source('./func/am_helper.R')
 source('./func/shiny_helper.R')
 
 
-# ##### This part is used to update the database
-# 
-# ### update index data
-# tickerText = "SPY,PRESX,EEM,DGS10,LQD,IYR,PSP,DFGBX"
-# tickers = splitTicker(tickerText)
-# for (i in tickers) {
-#   tryCatch(getSymbols(i, from = "1999-12-31"),
-#            error = function(e) {getSymbols(i, src = "FRED",
-#                                            from = "1999-12-31", env = globalenv())})
-# }
-# Database = data.frame()
-# for (i in 1:length(tickers)) {
-#   tmp = getCol(get(tickers[i]), tickers[i])
-#   Database <- cbind(Database, tmp)
-# }
-# Database = na.fill(Database, 0)
-# Databaseframe = as.data.frame(Database)
-# colnames(Databaseframe) = showManyTickers(tickers)
-# Databaseframe["date"] = as.Date(row.names(Databaseframe))
-# write.csv(Databaseframe, file = "./data/returns.csv", row.names = FALSE)
-# 
-# ### update risk-free rate
-# getSymbols("DGS3MO",src = "FRED")
-# rf = as.data.frame(getCol(DGS3MO, "rf"))
-# rf["date"] = as.Date(row.names(rf))
-# rf = rf[,c("date", "rf")]
-# write.csv(rf, file = "./data/rf.csv", row.names = FALSE)
-
-
 x <- list()
 Data <- data.frame()
 clo <- data.frame()
