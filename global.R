@@ -41,11 +41,11 @@ cov_matrix = cov(returns) * 250
 #  Plot graph 1
 df1 = data.frame(Asset = colnames(df), Return = mean_ret, Risk = sd_ret)
 
-g1 = ggplot(df1, aes(x=Risk, y=Return, label=Asset)) + geom_point(color="steelblue3")  + 
+g1 = ggplot(df1, aes(x=Risk, y=Return, label=Asset)) + geom_point(color="steelblue3")  +
   scale_y_continuous(limits=c(0, 0.10), labels = scales::percent_format()) +
   scale_x_continuous(limits=c(0, 0.4), labels = scales::percent_format()) +
-  xlab('Risk (standard deviation of returns, annualized)') + ylab('Average Returns, annualized') + 
-  theme_hc() 
+  xlab('Risk (standard deviation of returns, annualized)') + ylab('Average Returns, annualized') +
+  theme_hc()
 
 
 
@@ -58,7 +58,7 @@ g1 = ggplotly(g1, tooltip = c("x","y"), width = 600) %>%   add_annotations(x = d
                                                               arrowhead = 4,
                                                               arrowsize = .5,
                                                               ax = 60,
-                                                              ay = -30) 
+                                                              ay = -30)
 
 g1$x$data[[1]]$text = paste("Return:", round(df1$Return, 4) * 100, "%","<br>",
                             "Risk:", round(df1$Risk, 4) * 100, "%")
@@ -66,25 +66,25 @@ g1$x$data[[1]]$text = paste("Return:", round(df1$Return, 4) * 100, "%","<br>",
 g1 = g1 %>% layout(margin = list(b = 50, l = 50, t = 100), title = "Risk/Return of Assets <br> (annualized) 2000 - 3Q2019")
 
 # Plot graph 2
-risk_ret_ann = df %>% mutate(date = as.Date(rownames(df))) %>% 
+risk_ret_ann = df %>% mutate(date = as.Date(rownames(df))) %>%
   gather(key = "Asset", value="Return", -date) %>%
-  mutate(year = year(date)) %>% 
-  group_by(Asset, year) %>% 
+  mutate(year = year(date)) %>%
+  group_by(Asset, year) %>%
   summarize(av_ret = mean(Return)*250, Risk = sd(Return)*sqrt(250) ) %>%
-  rename(Return=av_ret) 
+  rename(Return=av_ret)
 
 
-g2 = ggplot(risk_ret_ann, aes(x=Risk, y=Return, text = paste(year,"<br>","Return:", 
-                                                             round(Return,4)*100,"%","<br>", "Risk:", round(Risk,4)*100,"%"))) + 
-  geom_point(color="steelblue3")  + 
-  xlab('Risk (standard deviation of returns, annualized)') + 
-  ylab('') + 
+g2 = ggplot(risk_ret_ann, aes(x=Risk, y=Return, text = paste(year,"<br>","Return:",
+                                                             round(Return,4)*100,"%","<br>", "Risk:", round(Risk,4)*100,"%"))) +
+  geom_point(color="steelblue3")  +
+  xlab('Risk (standard deviation of returns, annualized)') +
+  ylab('') +
   scale_y_continuous(labels = scales::percent_format()) +
   scale_x_continuous(labels = scales::percent_format()) +
-  theme_hc() + facet_wrap(~reorder(Asset, Risk, sd)) + 
+  theme_hc() + facet_wrap(~reorder(Asset, Risk, sd)) +
   theme(axis.title = element_text(hjust = 1, vjust=1))
 
-g2 = ggplotly(g2, tooltip = c("text"), width = 600) 
+g2 = ggplotly(g2, tooltip = c("text"), width = 600)
 
 g2[['x']][['layout']][['annotations']][[1]][['y']] = -0.1 #Move y-label lower
 
@@ -98,18 +98,18 @@ order = order[['Asset']]
 
 risk_ret_cum = df %>% mutate(date=rownames(df)) %>%
   gather(key="Asset", value="Return", -date) %>%
-  group_by(Asset) %>% 
-  arrange(date) %>% 
+  group_by(Asset) %>%
+  arrange(date) %>%
   mutate(cumRet = cumprod(1+Return) - 1)
 
 # Re-arrange
 risk_ret_cum$facet = factor(risk_ret_cum$Asset, levels = c(order))
 
-g3 = ggplot(risk_ret_cum, aes(x=as.Date(date), y=cumRet, text = paste(date,"<br>", "Compound return:", round(cumRet,4)*100,"%"), group=1)) + 
-    geom_line(color="steelblue3") + facet_wrap(~facet) + 
+g3 = ggplot(risk_ret_cum, aes(x=as.Date(date), y=cumRet, text = paste(date,"<br>", "Compound return:", round(cumRet,4)*100,"%"), group=1)) +
+    geom_line(color="steelblue3") + facet_wrap(~facet) +
     scale_y_continuous(labels = scales::percent_format()) +
-    scale_x_date(date_breaks = "5 years", date_labels =  "%y") + 
-    xlab('Years') + ylab('') + theme_hc() 
+    scale_x_date(date_breaks = "5 years", date_labels =  "%y") +
+    xlab('Years') + ylab('') + theme_hc()
 
 
 g3 = ggplotly(g3, tooltip = "text", width = 600)
@@ -132,7 +132,7 @@ max_tret = max(sim_port$Return)
 
 tret_vector = seq(min_tret, max_tret, length.out = 20)
 
-ef_line = data.frame(Risk = rep(NA, length(tret_vector)), Return = rep(NA, length(tret_vector)), 
+ef_line = data.frame(Risk = rep(NA, length(tret_vector)), Return = rep(NA, length(tret_vector)),
                      Portfolio = rep(NA, length(tret_vector))) #Place holder
 i =1 #counter
 
@@ -140,19 +140,19 @@ for (ret in tret_vector){
   ef_w = findEfficientFrontier.Return(returns, ret)
   tmp.Ret = calcPortPerformance(ef_w, mean_ret, cov_matrix)[[1]]
   tmp.Risk = calcPortPerformance(ef_w, mean_ret, cov_matrix)[[2]]
-  
+
   ef_line[i,'Return'] = tmp.Ret
   ef_line[i,'Risk'] = tmp.Risk
-  ef_line[i, 'Portfolio'] = paste(c(colnames(df)), 
+  ef_line[i, 'Portfolio'] = paste(c(colnames(df)),
                                   paste(as.character(round(ef_w, 4)*100), "%"), sep=": ", collapse = "<br>")
-  
+
   i = i+1
-  
+
 }
 
 
-g4 = ggplot(data=sim_port, aes(x=Risk, y=Return)) + geom_point(data=sim_port, aes(x=Risk, y=Return), color='gray', alpha=0.5) + 
-  geom_line(data=ef_line, aes(x=Risk, y=Return, text = Portfolio, group=1), color='steelblue3', size =2, alpha=0.5) + 
+g4 = ggplot(data=sim_port, aes(x=Risk, y=Return)) + geom_point(data=sim_port, aes(x=Risk, y=Return), color='gray', alpha=0.5) +
+  geom_line(data=ef_line, aes(x=Risk, y=Return, text = Portfolio, group=1), color='steelblue3', size =2, alpha=0.5) +
   scale_y_continuous(limits=c(0, 0.10), labels = scales::percent_format()) +
   scale_x_continuous(limits=c(0, 0.25), labels = scales::percent_format()) +
   theme_hc() + xlab('Risk (standard deviation of returns, annualized)') + ylab('') +
@@ -176,9 +176,9 @@ g4 = g4 %>% layout(margin = list(b = 50, l = 50, t = 120), title = "Simulated Po
 ############################################################
 ##  BackTesting
 ############################################################
-date()
-date_choices = seq(as.Date("2000-01-01"), as.Date("2019-10-01"), by="1 month")
-date_choices[length(date_choices)] = as.Date("2019-09-30")
+
+date_choices = seq(as.Date("2000-01-01"), as.Date(Sys.Date()), by="1 month")
+date_choices[length(date_choices)] = as.Date(Sys.Date())
 
 
 #load risk-free rates

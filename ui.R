@@ -5,9 +5,9 @@ library(shinyWidgets)
 library(rhandsontable)
 library(quantmod)
 
-shinyUI(dashboardPage(skin = "black" , 
+shinyUI(dashboardPage(skin = "black" ,
   dashboardHeader(title = "Portfolio Allocation Demo"),
-  
+
   dashboardSidebar(
     sidebarUserPanel("", img(src="carey.png",width="80%")),
     br(),
@@ -22,19 +22,19 @@ shinyUI(dashboardPage(skin = "black" ,
                menuSubItem("Your Allocation", tabName = "user_port"),
                menuSubItem("Allocation Comparison", tabName = "opt_port"),
                menuSubItem("ALM Comparison Simulation", tabName = "sim_port")
-               
+
                ),
       menuItem("Disclaimers", tabName = "discl", icon = icon("exclamation-triangle")))
-      
+
   ),
-  
+
   dashboardBody(
     tabItems(
 
-      
+
             ####ABOUT PAGE
             # tabItem(tabName = "about", fluidRow(column(6, htmlOutput("abt")))),
-            
+
             ####ABOUT PAGE
             tabItem(tabName = "about",
                     fluidRow(column(3,h2("About the Application"))),
@@ -52,16 +52,16 @@ shinyUI(dashboardPage(skin = "black" ,
                                       p("The author of current version is Qiang Sheng, who has solid background for quantitative finance, machine learning and algorithmic trading.")
                                     )))
                     ),
-      
-            ##### Legal Disclaimer Page 
+
+            ##### Legal Disclaimer Page
             tabItem(tabName = "discl", div(htmlOutput("disclaimer"))),
-            
-             
+
+
             ####Risk/Return Page
-            tabItem(tabName = "theory_1", 
+            tabItem(tabName = "theory_1",
                      fluidPage(h1("Risk/Return Ratio"),
                                p("In 1952 Harry Markowitz suggested that assets should be evaluated based on their risk/return ratio.
-                                  For the purposes of this app, I look at the asset returns measured by corresponding indices in 1Q2000 
+                                  For the purposes of this app, I look at the asset returns measured by corresponding indices in 1Q2000
                                  - 3Q2018. "),
                                p("The assets are:"),
                                p(em("Equities:")),
@@ -87,37 +87,37 @@ shinyUI(dashboardPage(skin = "black" ,
                                )
                                )
                      ),
-             
+
             #####Optimal potrfolio page
-             
-            tabItem(tabName = "theory_2", 
+
+            tabItem(tabName = "theory_2",
                      fluidPage(fluidRow(
                        column(6,h1("Optimal portfolio"),
-                               p("Asset returns are not perferctly correlated. Therefore, we can combine assets into portfolios, and harverst 
+                               p("Asset returns are not perferctly correlated. Therefore, we can combine assets into portfolios, and harverst
                                  the results of the diversification."),
-                               p("However, diversification is not limitless. For each expected risk there will be a portfolio with 
-                                 a maximum achievable return.The graph below shows risk/return profiles of simulated portfolios (gray) and 
+                               p("However, diversification is not limitless. For each expected risk there will be a portfolio with
+                                 a maximum achievable return.The graph below shows risk/return profiles of simulated portfolios (gray) and
                                  a line (blue) depicting portfolios offering highest return for a given risk."),
-                               p("In Harry Markowitz (1952) framework, such line is called the Efficient Frontier. However, Markowitz' theory 
-                                 assumes that investors hold long-short portfolios. In our analysis, we limit ourselves to long-only portfolios, 
+                               p("In Harry Markowitz (1952) framework, such line is called the Efficient Frontier. However, Markowitz' theory
+                                 assumes that investors hold long-short portfolios. In our analysis, we limit ourselves to long-only portfolios,
                                  as it is the type of portfolios retail investors usually hold. Therefore, we will refer to portfolios on this line as
                                  'Optimal Portfolios', and the line itself as the 'Optimal Line'."),
                                br(),
                                plotlyOutput("graph4")
                                )))
                      ),
-            
-            tabItem(tabName = "theory_3", 
+
+            tabItem(tabName = "theory_3",
                     fluidRow(column(8,div(htmlOutput("measures"))))
             ),
-            
-            
-            
+
+
+
             #####  HERE IS WHERE FUN BEGINS
             #####
-            
+
             #### Your allocation Page
-            tabItem(tabName = "user_port", 
+            tabItem(tabName = "user_port",
 
                      fluidRow(div(column(6, h4("Select Portfolio Allocation:", align = "center")),
                                   column(2, h4("Modify Expected Return:", align = "center")),
@@ -129,7 +129,7 @@ shinyUI(dashboardPage(skin = "black" ,
                                                        onLabel = "ON", offLabel = "OFF", size = "mini",
                                                        width = "100%")),
                                  column(2, align="right", h5(textOutput("currentsum")))
-                      
+
                     )),
                     fluidRow(
                              column(1, align="left",
@@ -165,22 +165,22 @@ shinyUI(dashboardPage(skin = "black" ,
                                     uiOutput("p12ui")
                              ),
                              column(2, rHandsontableOutput("table5")),
-                             
+
                              column(1, align="left",
                                     fluidRow(
                                       radioButtons(inputId="rebalance",
-                                                   label=NULL, 
+                                                   label=NULL,
                                                    choices=c("Monthly","Quarterly", "Annually", "Never"),
                                                    selected = "Never")),
                                     fluidRow(
-                                      br(), 
+                                      br(),
                                       actionBttn("update", label = "FetchData", color = "primary"),
-                                      hr(), 
+                                      hr(),
                                       actionBttn("go", label = "Backtest", color = "primary")
                                       )),
                              column(3,
                                     div(plotlyOutput("graph5"), align = "center", style = "height:250px"))),
-                    
+
                      fluidRow(column(12,
                                      # verbatimTextOutput("tttest"),
                                      div(sliderTextInput(
@@ -195,20 +195,20 @@ shinyUI(dashboardPage(skin = "black" ,
                               column(6, div(tableOutput("bt_table1"), align="center"))
                               )
              ),
-            
+
             ####Allocation Comparison Page
-            tabItem(tabName = "opt_port", 
+            tabItem(tabName = "opt_port",
                     fluidRow(column(4, h4("Your Allocation", align="center")),
                              column(4, h4("Similar Return", align="center")),
                              column(4, h4("Similar Risk", align="center"))
                              ),
-                    fluidRow(column(4, 
+                    fluidRow(column(4,
                                     br(),br(),
                                     div(plotlyOutput("graph7"), align="center")),
-                             column(4, 
+                             column(4,
                                     br(),br(),
                                     div(plotlyOutput("graph8"), align="center")),
-                             column(4, 
+                             column(4,
                                     br(),br(),
                                     div(plotlyOutput("graph9"), align="center"))
                              ),
@@ -219,12 +219,12 @@ shinyUI(dashboardPage(skin = "black" ,
                              column(6, div(br(),tableOutput("bt_table2"), align="center"))
                              )
                     ),
-     
+
             ###ALM Comparison Page
             tabItem(tabName = "sim_port",
                     fluidRow(column(9, h4("Simulations", align="center")),
                              column(3, h4("Liability Cashflow", align="center"))),
- 
+
                     fluidRow(
                       column(9, wellPanel(
                       fluidRow(column(3,
@@ -239,7 +239,7 @@ shinyUI(dashboardPage(skin = "black" ,
                                ),
                       div(plotOutput("graph11_2"), allign = "center"),
                       br(),
-                      
+
                       div(plotOutput("graph11"), allign = "center"),
 
                       # fluidRow(column(3,
@@ -258,17 +258,19 @@ shinyUI(dashboardPage(skin = "black" ,
 
 
                       div(plotOutput("graph13"), allign = "center"))
-                      )      
+                      )
 
                      ,
                     column(3,
                            wellPanel(
                              div(
                                # verbatimTextOutput("debug"),
-                               selectInput("simuWay", "Choose a scenario:", 
-                                           c("default", "Bob Miller", "Mary Swanson", "The Kleins", "The Nichols"),
+                               selectInput("simuWay", "Choose a scenario:",
+                                           c("default", "Recently Retired", "Pre Retired", "Couple and Young Kids", "Cook County","Custom"),
                                            selected = "default"),
-                               actionBttn("go2", label = "Run Sim", color = "primary"), 
+                               actionBttn("go2", label = "Run Sim", color = "primary"),
+                               # actionBttn("getAlm", label = "Retrieve Custom ALM", color = "primary"),
+                               # actionBttn("saveAlm", label = "Save Custom ALM", color = "primary"),
                                align = "left"),
                              br(),
                              div(
