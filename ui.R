@@ -62,7 +62,7 @@ shinyUI(dashboardPage(skin = "black" ,
                                   fluidPage(h1("Risk/Return Ratio"),
                                             p("In 1952 Harry Markowitz suggested that assets should be evaluated based on their risk/return ratio.
                                   For the purposes of this app, I look at the asset returns measured by corresponding indices in 1Q2000
-                                 - 3Q2018. "),
+                                 - 2Q2020. "),
                                             p("The assets are:"),
                                             p(em("Equities:")),
                                             tags$div(tags$ul(

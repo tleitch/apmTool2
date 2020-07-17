@@ -100,7 +100,7 @@ g1 = ggplotly(g1, tooltip = c("x","y"), width = 600) %>%   add_annotations(x = d
 g1$x$data[[1]]$text = paste("Return:", round(df1$Return, 4) * 100, "%","<br>",
                             "Risk:", round(df1$Risk, 4) * 100, "%")
 
-g1 = g1 %>% layout(margin = list(b = 50, l = 50, t = 100), title = "Risk/Return of Assets <br> (annualized) 2000 - 3Q2019")
+g1 = g1 %>% layout(margin = list(b = 50, l = 50, t = 100), title = "Risk/Return of Assets <br> (annualized) 2000 - 2Q2020")
 
 # Plot graph 2
 risk_ret_ann = df %>% mutate(date = as.Date(rownames(df))) %>%
@@ -125,7 +125,7 @@ g2 = ggplotly(g2, tooltip = c("text"), width = 600)
 
 g2[['x']][['layout']][['annotations']][[1]][['y']] = -0.1 #Move y-label lower
 
-g2 = g2 %>% layout(margin = list(b = 50, l = -50, t = 120), title = "Risk/Return of Assets By Years <br> (annualized) 2000 - 3Q2019",
+g2 = g2 %>% layout(margin = list(b = 50, l = -50, t = 120), title = "Risk/Return of Assets By Years <br> (annualized) 2000 - 2Q2020",
                    yaxis=list(title="Average Return, annualized", tickprefix=" "))
 
 # Plot graph 3
@@ -153,7 +153,7 @@ g3 = ggplotly(g3, tooltip = "text", width = 600)
 
 g3[['x']][['layout']][['annotations']][[1]][['y']] = -0.1 #Move y-label lower
 
-g3 = g3 %>% layout(margin = list(b = 50, l = 50, t = 120), title = "Compound Return <br> 2000 - 3Q2019",
+g3 = g3 %>% layout(margin = list(b = 50, l = 50, t = 120), title = "Compound Return <br> 2000 - 2Q2020",
                    yaxis=list(title="Compound Return"))
 
 
