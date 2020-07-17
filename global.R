@@ -25,9 +25,46 @@ clo <- data.frame()
 #########################################
 
 # df = read.csv('./data/returns.csv', row.names = 'date')
-df_full = read.csv('./data/returns.csv', row.names = 'date')
+# df_full = read.csv('./data/returns.csv', row.names = 'date')
+# df = df_full[,c(1,2,3,4,5,6)]
+# df = df[rownames(df)<"2019-10-01",]
+
+#########################################
+# Automatically update df_full
+#########################################
+
+lastday = today()
+getSymbols(c("SPY", "PRESX", "EEM", "LQD", "IYR", "PSP", "DFGBX"), from = "1999-12-31")
+getSymbols("DGS10", src = "FRED")
+DGS10 = na.fill(DGS10, "extend")
+DGS10 = DGS10["2000-01-01"<=index(DGS10),]
+l = dim(DGS10)[1]
+c4 = log(DGS10/100+1)/250
+
+c1 = ClCl(SPY)
+c2 = ClCl(PRESX)
+c3 = ClCl(EEM)
+c5 = ClCl(LQD)
+c6 = ClCl(IYR)
+c7 = ClCl(PSP)
+c8 = ClCl(DFGBX)
+
+c1 = c1[2:(dim(c1)[1])]
+date_tmp = cbind(c1,c4)
+full_date = index(date_tmp)
+# full_date = index(c1)
+
+t = merge(c1,c2,c3,c4,c5,c6,c7,c8)
+t = t[full_date]
+colnames(t) = c("SP500","EuropeStocks","EMStocks","Treasury","CorpBonds","RealEstate","PrivateEquity","GlobalBond")
+t = na.fill(t, c(0,0,0))
+
+#####################################
+# df_full = read.csv('./data/returns.csv', row.names = 'date')
+df_full = as.data.frame(t)
 df = df_full[,c(1,2,3,4,5,6)]
-df = df[rownames(df)<"2019-10-01",]
+df = df[rownames(df)<lastday,]
+
 
 
 # Convert to zoo
@@ -50,15 +87,15 @@ g1 = ggplot(df1, aes(x=Risk, y=Return, label=Asset)) + geom_point(color="steelbl
 
 
 g1 = ggplotly(g1, tooltip = c("x","y"), width = 600) %>%   add_annotations(x = df1$Risk,
-                                                              y = df1$Return,
-                                                              text = c("S&P500", "EuropeStocks", "EMStocks", "Treasury", "CorpBonds", "RealEstate" ),
-                                                              xref = "x",
-                                                              yref = "y",
-                                                              showarrow = TRUE,
-                                                              arrowhead = 4,
-                                                              arrowsize = .5,
-                                                              ax = 60,
-                                                              ay = -30)
+                                                                           y = df1$Return,
+                                                                           text = c("S&P500", "EuropeStocks", "EMStocks", "Treasury", "CorpBonds", "RealEstate" ),
+                                                                           xref = "x",
+                                                                           yref = "y",
+                                                                           showarrow = TRUE,
+                                                                           arrowhead = 4,
+                                                                           arrowsize = .5,
+                                                                           ax = 60,
+                                                                           ay = -30)
 
 g1$x$data[[1]]$text = paste("Return:", round(df1$Return, 4) * 100, "%","<br>",
                             "Risk:", round(df1$Risk, 4) * 100, "%")
@@ -106,10 +143,10 @@ risk_ret_cum = df %>% mutate(date=rownames(df)) %>%
 risk_ret_cum$facet = factor(risk_ret_cum$Asset, levels = c(order))
 
 g3 = ggplot(risk_ret_cum, aes(x=as.Date(date), y=cumRet, text = paste(date,"<br>", "Compound return:", round(cumRet,4)*100,"%"), group=1)) +
-    geom_line(color="steelblue3") + facet_wrap(~facet) +
-    scale_y_continuous(labels = scales::percent_format()) +
-    scale_x_date(date_breaks = "5 years", date_labels =  "%y") +
-    xlab('Years') + ylab('') + theme_hc()
+  geom_line(color="steelblue3") + facet_wrap(~facet) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_x_date(date_breaks = "5 years", date_labels =  "%y") +
+  xlab('Years') + ylab('') + theme_hc()
 
 
 g3 = ggplotly(g3, tooltip = "text", width = 600)
@@ -140,14 +177,14 @@ for (ret in tret_vector){
   ef_w = findEfficientFrontier.Return(returns, ret)
   tmp.Ret = calcPortPerformance(ef_w, mean_ret, cov_matrix)[[1]]
   tmp.Risk = calcPortPerformance(ef_w, mean_ret, cov_matrix)[[2]]
-
+  
   ef_line[i,'Return'] = tmp.Ret
   ef_line[i,'Risk'] = tmp.Risk
   ef_line[i, 'Portfolio'] = paste(c(colnames(df)),
                                   paste(as.character(round(ef_w, 4)*100), "%"), sep=": ", collapse = "<br>")
-
+  
   i = i+1
-
+  
 }
 
 
@@ -182,4 +219,15 @@ date_choices[length(date_choices)] = as.Date(Sys.Date())
 
 
 #load risk-free rates
-rf = read.csv("./data/rf.csv")
+# rf = read.csv("./data/rf.csv")
+getSymbols("DGS3MO", src = "FRED")
+rf = DGS3MO
+rf = na.fill(rf, "extend")
+rf = log(rf/100+1)/250
+rf = rf["2000-01-01"<=index(rf),]
+rf = rf[index(rf)<lastday,]
+rf = as.data.frame(rf)
+rfdate = as.data.frame(rownames(rf))
+rownames(rf) = rownames(rfdate)
+rf = cbind(rfdate, rf)
+colnames(rf) = c("date", "rf")
