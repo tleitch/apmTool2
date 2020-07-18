@@ -98,7 +98,7 @@ shinyServer(function(input, output, session){
   })
   
   output$downloadData <- downloadHandler(
-    filename = "downloadtest.csv",
+    filename = "allocation.csv",
     content = function(file) {
       write.csv(p1download(), file, row.names = FALSE)
     }
