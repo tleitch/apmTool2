@@ -84,6 +84,54 @@ shinyServer(function(input, output, session){
   port_weight = reactiveValues(weight=append(rep(1/8,8), rep(0,4))) # naive diversification
   # simu = reactiveValues(mu = 0)
   
+  ###############
+  ##  Downloading and uploading feature
+  ###############
+  
+  # output$tttest = renderPrint(getTicker())
+  p1download <- reactive({
+    x = round(port_weight$weight, digits = 4)
+    
+    p1down = cbind(getTicker(), x)
+    colnames(p1down) = c("Ticker", "Weight")
+    p1down
+  })
+  
+  output$downloadData <- downloadHandler(
+    filename = "downloadtest.csv",
+    content = function(file) {
+      write.csv(p1download(), file, row.names = FALSE)
+    }
+  )
+  
+  p1upload <- reactive({
+    df <- as.data.frame(read.csv(input$p1upload$datapath))
+    df
+  })
+  
+  
+  observeEvent(input$p1upload, {
+    for (i in 1:12) {
+      pp = paste("pp",i, sep = "")
+      if (toString(p1upload()[i,1]) == "NA") {
+        x = ""
+      } else {
+        x = toString(p1upload()[i,1])
+      }
+      updateTextAreaInput(session, pp, value = x)
+      
+    }
+    port_weight$weight = p1upload()[,2]
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
   currSum = reactive({
     if (input$auto == "TRUE") {
       sum = "100%"
