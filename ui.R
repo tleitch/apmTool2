@@ -201,7 +201,7 @@ shinyUI(dashboardPage(skin = "black" ,
                                            div(plotlyOutput("graph5"), align = "center", style = "height:250px"))),
                                   
                                   fluidRow(column(12,
-                                                  verbatimTextOutput("tttest"),
+                                                  # verbatimTextOutput("tttest"),
                                                   div(sliderTextInput(
                                                     inputId = "date_range", label = h4("Time interval:"), width = "80%",
                                                     choices = date_choices, selected = range(date_choices),
