@@ -254,7 +254,14 @@ shinyUI(dashboardPage(skin = "black" ,
                                                       verbatimTextOutput("simu12")
                                                       # numericInput("simu12", label = "Expected annually log return (%)",
                                                       #                  "")
-                                               )
+                                               ),
+                                               column(1),
+                                               column(1,downloadButton("p3download", "Download"), allign = "center"),
+                                               column(1),
+                                               column(1,fileInput("p3upload", NULL,
+                                                                  buttonLabel = "Upload",
+                                                                  multiple = TRUE,
+                                                                  accept = ".csv"), allign = "right")
                                       ),
                                       div(plotOutput("graph11_2"), allign = "center"),
                                       br(),
