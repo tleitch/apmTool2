@@ -84,6 +84,54 @@ shinyServer(function(input, output, session){
   port_weight = reactiveValues(weight=append(rep(1/8,8), rep(0,4))) # naive diversification
   # simu = reactiveValues(mu = 0)
   
+  ###############
+  ##  Downloading and uploading feature
+  ###############
+  
+  # output$tttest = renderPrint(getTicker())
+  p1download <- reactive({
+    x = round(port_weight$weight, digits = 4)
+    
+    p1down = cbind(getTicker(), x)
+    colnames(p1down) = c("Ticker", "Weight")
+    p1down
+  })
+  
+  output$downloadData <- downloadHandler(
+    filename = "allocation.csv",
+    content = function(file) {
+      write.csv(p1download(), file, row.names = FALSE)
+    }
+  )
+  
+  p1upload <- reactive({
+    df <- as.data.frame(read.csv(input$p1upload$datapath))
+    df
+  })
+  
+  
+  observeEvent(input$p1upload, {
+    for (i in 1:12) {
+      pp = paste("pp",i, sep = "")
+      if (toString(p1upload()[i,1]) == "NA") {
+        x = ""
+      } else {
+        x = toString(p1upload()[i,1])
+      }
+      updateTextAreaInput(session, pp, value = x)
+      
+    }
+    port_weight$weight = p1upload()[,2]
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
   currSum = reactive({
     if (input$auto == "TRUE") {
       sum = "100%"
@@ -914,30 +962,58 @@ shinyServer(function(input, output, session){
   # })
   
   
-  getLiab <- reactive({
-    switch (input$simuWay,
-            "Recently Retired" = c(0,rep(120,40)),
-            "Pre Retired" = c(0,rep(0,10),rep(75,30)),
-            "Couple and Young Kids" = c(0,rep(0,7),rep(50,6),rep(0,11),rep(85,16)),
-            "Cook County"=c(0,871 , 929, 991, 1058, 1129, 1204, 1285, 1371, 1463, 1561, 1666, 1777, 1896, 2023, 2159, 2303, 2458, 2622, 2798, 2986, 3186, 3399, 3627, 3870,
-                            4129,  4405,  4701,  5016,  5352,  5710,  6093,  6501,  6937,  7401,  6800,  6400,  6000,  5500,5000 ,4000 ),
-            c(0,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
-            "Custom"= alm$customLiab
+  # getLiab <- reactive({
+  #   switch (input$simuWay,
+  #           "Recently Retired" = c(0,rep(120,40)),
+  #           "Pre Retired" = c(0,rep(0,10),rep(75,30)),
+  #           "Couple and Young Kids" = c(0,rep(0,7),rep(50,6),rep(0,11),rep(85,16)),
+  #           "Cook County"=c(0,871 , 929, 991, 1058, 1129, 1204, 1285, 1371, 1463, 1561, 1666, 1777, 1896, 2023, 2159, 2303, 2458, 2622, 2798, 2986, 3186, 3399, 3627, 3870,
+  #                           4129,  4405,  4701,  5016,  5352,  5710,  6093,  6501,  6937,  7401,  6800,  6400,  6000,  5500,5000 ,4000 ),
+  #           c(0,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
+  #           "Custom"= alm$customLiab
+  #   )
+  # })
+  # 
+  # getCash <- reactive({
+  #   switch (input$simuWay,
+  #           "Recently Retired" = c(20000,rep(0,40)),
+  #           "Pre Retired" = c(150,rep(45,10),rep(0,30)),
+  #           "Couple and Young Kids" = c(120,rep(35,40)),
+  #           "Cook County" = c(9116,749 , 409, 420, 431, 442, 453, 465, 477, 490, 503, 516, 529, 543, 557, 571, 586, 601, 617, 633, 650, 666, 684, 702, 720, 739, 758, 777, 798, 818, 840, 862, 884, 907,
+  #                             930, 955, 979, 1005, 1031, 1058, 1085),
+  #           c(100,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
+  #           "Custom" = alm$customCash
+  #   )
+  # })
+  
+  
+  p3cash = reactiveValues(cashIn = 1, cashOut = 2)
+  
+  observeEvent(input$simuWay, {
+    p3cash$cashIn = switch (input$simuWay,
+                            "Recently Retired" = c(20000,rep(0,40)),
+                            "Pre Retired" = c(150,rep(45,10),rep(0,30)),
+                            "Couple and Young Kids" = c(120,rep(35,40)),
+                            "Cook County" = c(9116,749 , 409, 420, 431, 442, 453, 465, 477, 490, 503, 516, 529, 543, 557, 571, 586, 601, 617, 633, 650, 666, 684, 702, 720, 739, 758, 777, 798, 818, 840, 862, 884, 907,
+                                              930, 955, 979, 1005, 1031, 1058, 1085),
+                            c(100,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
+                            "Custom" = alm$customCash
+    )
+    p3cash$cashOut = switch (input$simuWay,
+                             "Recently Retired" = c(0,rep(120,40)),
+                             "Pre Retired" = c(0,rep(0,10),rep(75,30)),
+                             "Couple and Young Kids" = c(0,rep(0,7),rep(50,6),rep(0,11),rep(85,16)),
+                             "Cook County"=c(0,871 , 929, 991, 1058, 1129, 1204, 1285, 1371, 1463, 1561, 1666, 1777, 1896, 2023, 2159, 2303, 2458, 2622, 2798, 2986, 3186, 3399, 3627, 3870,
+                                             4129,  4405,  4701,  5016,  5352,  5710,  6093,  6501,  6937,  7401,  6800,  6400,  6000,  5500,5000 ,4000 ),
+                             c(0,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
+                             "Custom"= alm$customLiab
     )
   })
   
-  getCash <- reactive({
-    switch (input$simuWay,
-            "Recently Retired" = c(20000,rep(0,40)),
-            "Pre Retired" = c(150,rep(45,10),rep(0,30)),
-            "Couple and Young Kids" = c(120,rep(35,40)),
-            "Cook County" = c(9116,749 , 409, 420, 431, 442, 453, 465, 477, 490, 503, 516, 529, 543, 557, 571, 586, 601, 617, 633, 650, 666, 684, 702, 720, 739, 758, 777, 798, 818, 840, 862, 884, 907,
-                              930, 955, 979, 1005, 1031, 1058, 1085),
-            c(100,rep(0,5),rep(5,4),rep(0,11),rep(9,20)),
-            "Custom" = alm$customCash
-    )
+  observeEvent(input$p3upload, {
+    p3cash$cashIn = p3upload()[,2]
+    p3cash$cashOut = p3upload()[,3]
   })
-  
   
   # output$debug = renderPrint(hot_to_r(input$table3)[1,2])
   
@@ -950,15 +1026,55 @@ shinyServer(function(input, output, session){
     
     DF = data.frame(year = 0:nYears,
                     # cashIn = c(100,rep(0,4),rep(4,5),rep(0,9),rep(3,8), rep(0,14)),
-                    cashIn = getCash(),
-                    cashOut = getLiab(),
+                    # cashIn = getCash(),
+                    # cashOut = getLiab(),
+                    
+                    cashIn = p3cash$cashIn,
+                    cashOut = p3cash$cashOut,
+                    
                     stringsAsFactors = FALSE)
+    # DF = p3downloadData()
     
     rhandsontable(DF, width = 300, height = 1000, rowHeaders = NULL) %>%
       hot_col("cashOut", allowInvalid = TRUE)
   })
   
   
+  ###############
+  ##  Downloading and uploading feature
+  ###############
+  
+  p3downloadData <- reactive({
+    p3prep = input$table3$data
+    
+    DF = matrix(1:123, ncol=3)
+    DF
+    for (i in 1:41) {
+      for (j in 2:3) {
+        DF[i,j] = p3prep[[i]][[j]]
+      }
+    }
+    DF2 = data.frame(year = 0:40,
+                     cashIn = DF[,2],
+                     cashOut = DF[,3],
+                     stringsAsFactors = FALSE)
+    DF2
+  })
+  
+  output$p3download <- downloadHandler(
+    filename = "cashflow.csv",
+    content = function(file) {
+      write.csv(p3downloadData(), file, row.names = FALSE)
+      # write.csv(input$table3$data, file, row.names = FALSE)
+    }
+  )
+  
+  p3upload <- reactive({
+    df <- as.data.frame(read.csv(input$p3upload$datapath))
+    df
+  })
+  
+  ##############################################################
   
   getHis <- reactive({
     data = as.data.frame(dataInput())
